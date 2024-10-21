@@ -1,0 +1,74 @@
+---
+title: "MA615 strawberry"
+output: html_document
+date: "2024-10-21"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r}
+library(tidyverse)
+library(knitr)  
+library(kableExtra)
+library(stringr)
+strawberry<-read.csv("cleaned_strawberry_data.csv")
+na_summary <- colSums(is.na(strawberry))
+strawberry_clean <- strawberry %>% drop_na(Value)
+summary(strawberry_clean$Value)
+state_measure_summary <- strawberry_clean %>%
+  group_by(State, Measure, Bearing_type) %>%
+  summarise(Total_Value = sum(Value, na.rm = TRUE)) %>%
+  arrange(desc(Total_Value))
+head(state_measure_summary)
+library(ggplot2)
+ggplot(state_measure_summary, aes(x = reorder(State, -Total_Value), y = Total_Value, fill = Bearing_type)) +
+  geom_bar(stat = "identity") +
+  theme_minimal() +
+  labs(title = "Strawberry Cultivation by State and Bearing Type", x = "State", y = "Total Value") +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))
+yearly_summary <- strawberry_clean %>%
+  group_by(Year) %>%
+  summarise(Total_Value = sum(Value, na.rm = TRUE))
+ggplot(yearly_summary, aes(x = Year, y = Total_Value)) +
+  geom_line(color = "blue", size = 1) +
+  theme_minimal() +
+  labs(title = "Strawberry Cultivation Trends Over the Years", x = "Year", y = "Total Value")
+district_summary <- strawberry_clean %>%
+  group_by(State, Ag.District) %>%
+  summarise(Total_Value = sum(Value, na.rm = TRUE))
+ggplot(district_summary, aes(x = Ag.District, y = Total_Value, fill = State)) +
+  geom_bar(stat = "identity") +
+  theme_minimal() +
+  labs(title = "Strawberry Cultivation by Agricultural District and State", x = "Ag. District", y = "Total Value") +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))
+```
+#Conclusion
+#1. Regional distribution of strawberry planting: As can be seen from the bar chart, there are obvious differences in strawberry planting among different states. Some states have particularly large strawberry planting areas, and the planting characteristics and policy support of these states can be further studied in the future.
+#2. Changes in planting trends: Strawberry planting area has fluctuated over the past few years. Using the time series graph, we can identify whether there is a cyclical change and further analyze the possible causes, such as climate, market demand, etc.
+#3. The use of chemical substances: For the use of toxic chemicals, we can see whether the carcinogens listed by WHO are frequently used in strawberry cultivation, which has an important impact on health and the environment.
+
+
+
+#New question
+#Is the trend of strawberry planting area related to climate and policy changes?
+#Are the differences between different agricultural areas due to natural conditions or differences in growing techniques?
+#Can climate data or economic data be combined to further analyze factors affecting strawberry cultivation in the future?
+
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
